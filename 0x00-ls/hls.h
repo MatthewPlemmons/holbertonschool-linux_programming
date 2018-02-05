@@ -56,8 +56,8 @@ int sort_items(const char **items);
 int a_sort(const char *a, const char *b);
 
 char **parse_args(size_t argc, char **argv);
-int check_flags(char *flags);
-int flag_count(char **argv);
+int check_flags(char *flags, enum format *format, enum print_mode *print_mode);
+int flag_count(char **argv, enum format *format, enum print_mode *print_mode);
 
 char *_strcpy(char *dest, char *src);
 char *_strcat(char *dest, char *src);

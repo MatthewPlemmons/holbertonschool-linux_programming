@@ -35,7 +35,7 @@ char **parse_args(size_t n_dir_args, char *argv[])
  * @flags: string containing possible option chars
  * Return: 0 if successful.
  */
-int check_flags(char *flags)
+int check_flags(char *flags, enum format *format, enum print_mode *print_mode)
 {
 	size_t i;
 
@@ -43,22 +43,22 @@ int check_flags(char *flags)
 	{
 		if (flags[i] == '1')
 		{
-			format |= one_per_line;
+			*format |= one_per_line;
 			continue;
 		}
 		if (flags[i] == 'l')
 		{
-			format |= long_format;
+			*format |= long_format;
 			continue;
 		}
 		if (flags[i] == 'a')
 		{
-			print_mode |= print_all;
+			*print_mode |= print_all;
 			continue;
 		}
 		if (flags[i] == 'A')
 		{
-			print_mode |= almost_all;
+			*print_mode |= almost_all;
 			continue;
 		}
 	}
@@ -71,7 +71,7 @@ int check_flags(char *flags)
  * @argv: list of command line arguments
  * Return: number of option markers found.
  */
-int flag_count(char **argv)
+int flag_count(char **argv, enum format *format, enum print_mode *print_mode)
 {
 	int i, count;
 
@@ -80,7 +80,7 @@ int flag_count(char **argv)
 	{
 		if (argv[i][0] == '-')
 		{
-			check_flags(argv[i]);
+			check_flags(argv[i], format, print_mode);
 			++count;
 		}
 	}

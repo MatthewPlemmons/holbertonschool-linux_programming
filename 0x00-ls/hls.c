@@ -135,16 +135,19 @@ int main(int argc, char *argv[])
 	const char **dir_items;
 	char **dir_paths;
 	size_t i, n_dir_args, file_count;
-	enum format format;
-	enum print_mode print_mode;
+	enum format *format;
+	enum print_mode *print_mode;
 
-	n_dir_args = (argc - 1) - flag_count(argv);
+	format = malloc(sizeof(enum format));
+	print_mode = malloc(sizeof(enum print_mode));
+
+	n_dir_args = (argc - 1) - flag_count(argv, format, print_mode);
 	if (!n_dir_args)
 	{
 		file_count = count_files(".");
-		dir_items = collect_names(".", file_count, print_mode);
+		dir_items = collect_names(".", file_count, *print_mode);
 		sort_items(dir_items);
-		print_files(dir_items, ".", format);
+		print_files(dir_items, ".", *format);
 		free_ptr_array(dir_items, file_count);
 	}
 	else
@@ -155,12 +158,12 @@ int main(int argc, char *argv[])
 			file_count = count_files(dir_paths[i]);
 			dir_items = collect_names(dir_paths[i],
 						  file_count,
-						  print_mode);
+						  *print_mode);
 			sort_items(dir_items);
 
 			if (n_dir_args > 1)
 				print_path_name(dir_paths[i]);
-			print_files(dir_items, dir_paths[i], format);
+			print_files(dir_items, dir_paths[i], *format);
 
 			if (dir_paths[i + 1])
 				putchar('\n');
@@ -170,6 +173,7 @@ int main(int argc, char *argv[])
 			free(dir_paths[i]);
 		free(dir_paths);
 	}
-
+	free(format);
+	free(print_mode);
 	return (0);
 }
