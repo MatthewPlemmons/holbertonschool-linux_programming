@@ -1,9 +1,9 @@
 #include "hls.h"
 
 /**
- * print_error -
+ * print_error - print error messages.
  *
- * @s:
+ * @s: string that initiated error
  */
 void print_error(const char *s)
 {
@@ -11,14 +11,13 @@ void print_error(const char *s)
 		perror(s);
 	if (errno == EACCES)
 		perror(s);
-	return;
 }
 
 /**
- * count_files - 
+ * count_files - count the number of files in a directory.
  *
- * @path:
- * Return:
+ * @path: directory path
+ * Return: number of files in directory.
  */
 size_t count_files(char *path)
 {
@@ -29,7 +28,6 @@ size_t count_files(char *path)
 	file_count = 0;
 	dir = opendir(path);
 
-	/* handle opendir errors */
 	if (!dir)
 	{
 		print_error((const char *) path);
@@ -45,19 +43,19 @@ size_t count_files(char *path)
 /**
  * collect_names - store filenames located in a directory.
  *
- * @path:
- * Return: const char **dir_items
+ * @path: directory path
+ * Return: list of filenames in the directory.
  */
-const char **collect_names(char *path)
+const char **collect_names(char *path,
+			   size_t file_count,
+			   enum print_mode print_mode)
 {
 	struct dirent *read;
 	DIR *dir;
 	const char **dir_items;
 	size_t i;
 
-	file_count = count_files(path);
-
-	dir_items = malloc(sizeof (char *) * file_count + 1);
+	dir_items = malloc(sizeof(char *) * file_count + 1);
 	for (i = 0; i < file_count; ++i)
 	{
 		dir_items[i] = malloc(sizeof(char) * MAX_FILENAME_SIZE);
@@ -110,12 +108,12 @@ const char **collect_names(char *path)
 }
 
 /**
- * free_ptr_array -
+ * free_ptr_array - free space allocated for filenames.
  *
- * @arr:
- * Return:
+ * @arr: list of filenames
+ * Return: 0 if successful.
  */
-int free_ptr_array(const char **arr)
+int free_ptr_array(const char **arr, size_t file_count)
 {
 	size_t i;
 
@@ -136,34 +134,38 @@ int main(int argc, char *argv[])
 {
 	const char **dir_items;
 	char **dir_paths;
-	size_t i, n_dir_args;
+	size_t i, n_dir_args, file_count;
+	enum format format;
+	enum print_mode print_mode;
 
 	n_dir_args = (argc - 1) - flag_count(argv);
 	if (!n_dir_args)
 	{
-		dir_items = collect_names(".");
+		file_count = count_files(".");
+		dir_items = collect_names(".", file_count, print_mode);
 		sort_items(dir_items);
-		print_files(dir_items, ".");
-		free_ptr_array(dir_items);
+		print_files(dir_items, ".", format);
+		free_ptr_array(dir_items, file_count);
 	}
 	else
 	{
-		/* make sure dir_paths is sorted here */
-		dir_paths = parse_args(argc, argv);
+		dir_paths = parse_args(n_dir_args, argv);
 		for (i = 0; dir_paths[i]; ++i)
 		{
-			dir_items = collect_names(dir_paths[i]);
+			file_count = count_files(dir_paths[i]);
+			dir_items = collect_names(dir_paths[i],
+						  file_count,
+						  print_mode);
 			sort_items(dir_items);
 
 			if (n_dir_args > 1)
 				print_path_name(dir_paths[i]);
-			print_files(dir_items, dir_paths[i]);
+			print_files(dir_items, dir_paths[i], format);
 
 			if (dir_paths[i + 1])
 				putchar('\n');
-			free_ptr_array(dir_items);
+			free_ptr_array(dir_items, file_count);
 		}
-		/*free_ptr_array((const char **) dir_paths);*/
 		for (i = 0; i < n_dir_args; ++i)
 			free(dir_paths[i]);
 		free(dir_paths);
