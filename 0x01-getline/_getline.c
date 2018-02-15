@@ -1,6 +1,24 @@
 #include "_getline.h"
 
 /**
+ * _realloc - Reallocates memory by size bytes.
+ *
+ * @ptr: pointer to the memory block being reallocated
+ * @size: size of new allocation
+ * Return: Pointer to reallocated block of memory.
+ */
+void *_realloc(char *ptr, ssize_t size)
+{
+	void *tmp;
+
+	tmp = ptr;
+	ptr = malloc(sizeof(char) * size);
+	memcpy(ptr, tmp, size);
+	free(tmp);
+	return (ptr);
+}
+
+/**
  * read_into_buffer - Read bytes from fd into buffer.
  *
  * @fd: file descriptor
@@ -21,7 +39,7 @@ char *read_into_buffer(const int fd, char *buf)
 		if (len == READ_SIZE)
 		{
 			needed += READ_SIZE;
-			buf = realloc(buf, needed);
+			buf = _realloc(buf, needed);
 			if (!buf)
 			{
 				free(buf);
@@ -33,7 +51,7 @@ char *read_into_buffer(const int fd, char *buf)
 			break;
 	}
 
-	buf = realloc(buf, curr_len + 1);
+	buf = _realloc(buf, curr_len + 1);
 	if (!buf)
 	{
 		free(buf);
