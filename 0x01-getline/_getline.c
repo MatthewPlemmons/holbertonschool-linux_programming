@@ -64,14 +64,15 @@ char *allocate_buffer(const int fd, char *buf)
 		free(buf);
 		return (NULL);
 	}
+
 	buf = read_into_buffer(fd, buf);
 	if (!buf)
 	{
 		free(buf);
 		return (NULL);
 	}
-	return (buf);
 
+	return (buf);
 }
 
 /**
