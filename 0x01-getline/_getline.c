@@ -134,5 +134,6 @@ char *_getline(const int fd)
 
 	buf -= cur_len;
 	free(buf);
+	cur_len = 0;
 	return (NULL);
 }
