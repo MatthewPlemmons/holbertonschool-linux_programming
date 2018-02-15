@@ -17,9 +17,7 @@ char *read_into_buffer(const int fd, char *buf)
 	while ((len = read(fd, buf + curr_len, READ_SIZE)) > 0)
 	{
 		if (len == -1)
-		{
 			return (NULL);
-		}
 		if (len == READ_SIZE)
 		{
 			needed += READ_SIZE;
@@ -32,10 +30,7 @@ char *read_into_buffer(const int fd, char *buf)
 		}
 		curr_len += len;
 		if (len < READ_SIZE)
-		{
-			buf[curr_len] = '\0';
 			break;
-		}
 	}
 
 	buf = realloc(buf, curr_len + 1);
