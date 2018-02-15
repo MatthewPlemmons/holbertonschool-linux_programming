@@ -13,6 +13,9 @@ void *_realloc(char *ptr, ssize_t size)
 
 	tmp = ptr;
 	ptr = malloc(sizeof(char) * size);
+	if (!ptr)
+		return (NULL);
+
 	memcpy(ptr, tmp, size);
 	free(tmp);
 	return (ptr);
