@@ -138,6 +138,7 @@ char *_getline(const int fd)
 			for (j = 0; j < fds[i]->len - 1; ++j)
 				fds[i]->buf[j] = '\0';
 
+			fds[i]->len = 0;
 			free(fds[i]->buf);
 			fds[i]->buf = NULL;
 			free(fds[i]);
@@ -172,5 +173,9 @@ char *_getline(const int fd)
 
 	fds[fd]->buf -= fds[fd]->cur_len;
 	fds[fd]->cur_len = 0;
+	free(fds[fd]->buf);
+	fds[fd]->buf = NULL;
+	free(fds[fd]);
+	fds[fd] = NULL;
 	return (NULL);
 }
