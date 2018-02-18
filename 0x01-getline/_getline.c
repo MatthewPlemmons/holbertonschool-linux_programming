@@ -7,18 +7,35 @@
  * @size: size of new allocation
  * Return: Pointer to reallocated block of memory.
  */
-void *_realloc(char *ptr, ssize_t size)
+char *_realloc(char *ptr, ssize_t size)
 {
-	void *tmp;
+	char *tmp, *buf;
+	ssize_t i, size_offset;
 
-	tmp = ptr;
-	ptr = malloc(sizeof(char) * size);
-	if (!ptr)
+	tmp = malloc(sizeof(char) * size);
+	if (!tmp)
 		return (NULL);
 
-	memcpy(ptr, tmp, size);
+	if (size <= READ_SIZE)
+		size_offset = 0;
+	else
+		size_offset = READ_SIZE;
+
+	for (i = 0; i < size - size_offset; ++i)
+		tmp[i] = ptr[i];
+
+	buf = malloc(sizeof(char) * size);
+	if (!buf)
+	{
+		free(tmp);
+		return (NULL);
+	}
+	for (i = 0; i < size; ++i)
+		buf[i] = tmp[i];
+
 	free(tmp);
-	return (ptr);
+	free(ptr);
+	return (buf);
 }
 
 /**
@@ -26,9 +43,10 @@ void *_realloc(char *ptr, ssize_t size)
  *
  * @fd: file descriptor
  * @buf: buffer
+ * @fds: pointer array for fdbuf_t structures
  * Return: Buffer containing bytes read in from fd, or NULL on failure.
  */
-char *read_into_buffer(const int fd, char *buf)
+char *read_into_buffer(const int fd, char *buf, struct fdbuf_t **fds)
 {
 	static ssize_t curr_len;
 	ssize_t len, needed;
@@ -44,10 +62,7 @@ char *read_into_buffer(const int fd, char *buf)
 			needed += READ_SIZE;
 			buf = _realloc(buf, needed);
 			if (!buf)
-			{
-				free(buf);
 				return (NULL);
-			}
 		}
 		curr_len += len;
 		if (len < READ_SIZE)
@@ -56,12 +71,10 @@ char *read_into_buffer(const int fd, char *buf)
 
 	buf = _realloc(buf, curr_len + 1);
 	if (!buf)
-	{
-		free(buf);
 		return (NULL);
-	}
 
 	buf[curr_len] = '\0';
+	fds[fd]->len = curr_len;
 	return (buf);
 }
 
@@ -69,26 +82,36 @@ char *read_into_buffer(const int fd, char *buf)
  * allocate_buffer - Allocate space for a buffer to store data from fd.
  *
  * @fd: file descriptor
- * @buf: buffer
+ * @fds: pointer array to fd structures
  * Return: Buffer containing bytes read in from fd, or NULL on failure.
  */
-char *allocate_buffer(const int fd, char *buf)
+fdbuf_t *allocate_buffer(const int fd, struct fdbuf_t **fds)
 {
+	char *buf;
+
 	buf = malloc(sizeof(char) * READ_SIZE);
 	if (!buf)
+		return (NULL);
+
+	fds[fd] = malloc(sizeof(struct fdbuf_t));
+	if (!fds[fd])
 	{
 		free(buf);
 		return (NULL);
 	}
 
-	buf = read_into_buffer(fd, buf);
+	buf = read_into_buffer(fd, buf, fds);
 	if (!buf)
 	{
+		free(fds[fd]);
 		free(buf);
 		return (NULL);
 	}
 
-	return (buf);
+	fds[fd]->fd = fd;
+	fds[fd]->cur_len = 0;
+	fds[fd]->buf = buf;
+	return (fds[fd]);
 }
 
 /**
@@ -99,24 +122,39 @@ char *allocate_buffer(const int fd, char *buf)
  */
 char *_getline(const int fd)
 {
-	static ssize_t cur_len;
-	ssize_t i;
-	static char *buf;
+	ssize_t i, j;
 	char *ptr;
+	static struct fdbuf_t *fds[OPEN_MAX];
 
-	if (!buf)
+	if (fd == -1)
 	{
-		buf = allocate_buffer(fd, buf);
-		if (!buf)
+		for (i = 0; i < OPEN_MAX; ++i)
 		{
-			free(buf);
-			return (NULL);
+			if (fds[i] == NULL)
+				continue;
+			fds[i]->buf -= fds[i]->cur_len;
+			fds[i]->cur_len = 0;
+
+			for (j = 0; j < fds[i]->len - 1; ++j)
+				fds[i]->buf[j] = '\0';
+
+			free(fds[i]->buf);
+			fds[i]->buf = NULL;
+			free(fds[i]);
+			fds[i] = NULL;
 		}
+		return (NULL);
+	}
+	if (fds[fd] == NULL)
+	{
+		fds[fd] = allocate_buffer(fd, fds);
+		if (!fds[fd])
+			return (NULL);
 	}
 
-	for (i = 0; buf[i]; ++i)
+	for (i = 0; fds[fd]->buf[i]; ++i)
 	{
-		if (buf[i] == '\n')
+		if (fds[fd]->buf[i] == '\n')
 		{
 			ptr = malloc(sizeof(char) * i + 1);
 			if (!ptr)
@@ -124,16 +162,15 @@ char *_getline(const int fd)
 				free(ptr);
 				break;
 			}
-			memcpy(ptr, buf, i);
-			buf += i + 1;
+			memcpy(ptr, fds[fd]->buf, i);
 			ptr[i] = '\0';
-			cur_len += i + 1;
+			fds[fd]->buf += i + 1;
+			fds[fd]->cur_len += i + 1;
 			return (ptr);
 		}
 	}
 
-	buf -= cur_len;
-	free(buf);
-	cur_len = 0;
+	fds[fd]->buf -= fds[fd]->cur_len;
+	fds[fd]->cur_len = 0;
 	return (NULL);
 }
