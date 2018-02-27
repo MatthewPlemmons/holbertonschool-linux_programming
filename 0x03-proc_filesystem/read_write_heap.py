@@ -1,7 +1,12 @@
 #!/usr/bin/python3
 
 
-"""Access and modify a processes virtual memory."""
+"""
+Access and modify a processes virtual memory.
+
+Usage: sudo ./read_write_heap.py pid "search_string" "replace_string"
+
+"""
 
 import os
 import pdb
@@ -11,6 +16,7 @@ if len(argv) is not 4:
     print('Usage: {} pid search_string replace_string'.format(argv[0]))
     exit(1)
 
+# Add error checking on these arguments.
 pid = argv[1]
 search_str = bytes(argv[2], 'UTF-8')
 replace_str = bytes(argv[3], 'UTF-8')
