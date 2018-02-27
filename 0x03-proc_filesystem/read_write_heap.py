@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+
 """Access and modify a processes virtual memory."""
 
 import os
@@ -14,8 +15,8 @@ pid = argv[1]
 search_str = bytes(argv[2], 'UTF-8')
 replace_str = bytes(argv[3], 'UTF-8')
 
+
 def get_heap_addr(pid):
-    #pdb.set_trace()
     with open('/proc/{}/maps'.format(pid), 'r') as maps:
         for line in maps:
             if '[heap]' in line:
@@ -24,6 +25,7 @@ def get_heap_addr(pid):
                 return(addr)
     print('Heap memory address was not found')
     exit(1)
+
 
 def write_to_memory(search_str, replace_str, addr):
     with open('/proc/{}/mem'.format(pid), 'rb+') as mem:
@@ -38,8 +40,8 @@ def write_to_memory(search_str, replace_str, addr):
             return
     exit(1)
 
+
 if __name__ == "__main__":
-    # get heap address
     addr = get_heap_addr(pid)
     write_to_memory(search_str, replace_str, addr)
     exit(1)
