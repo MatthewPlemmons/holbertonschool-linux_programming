@@ -7,9 +7,9 @@
  */
 void print_hello(int signum)
 {
-        signal(signum, SIG_IGN);
-        printf("Hello :)\n");
-        signal(signum, print_hello);
+	signal(signum, SIG_IGN);
+	printf("Hello :)\n");
+	signal(signum, print_hello);
 }
 
 /**
@@ -19,5 +19,5 @@ void print_hello(int signum)
  */
 void set_print_hello(void)
 {
-        signal(SIGINT, print_hello);
+	signal(SIGINT, print_hello);
 }
