@@ -8,11 +8,10 @@
 void sigint_handler(int signum)
 {
 	printf("Gotcha [%i]\n", signum);
-	/*signal(signum, sigint_handler);*/
 }
 
 /**
- * handle_signal - Handle received signal.
+ * handle_sigaction - Handle received signal.
  *
  * Return: 0 on success, -1 on error.
  */
