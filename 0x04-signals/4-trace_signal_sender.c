@@ -1,7 +1,7 @@
 #include "signals.h"
 
 /**
- * sigint_handler - Print PID of signal sender.
+ * sigquit_handler - Print PID of signal sender.
  *
  * @sig: integer value of the signal
  * @info: struct containing more information on the signal
@@ -14,7 +14,7 @@ void sigquit_handler(int sig, siginfo_t *info, void *ucontext)
 }
 
 /**
- * handle_sigaction - Handle received signal.
+ * trace_signal_sender - Handle received signal.
  *
  * Return: 0 on success, -1 on error.
  */
