@@ -3,7 +3,9 @@
 /**
  * sigint_handler - Print PID of signal sender.
  *
- * @signum: integer value of the signal
+ * @sig: integer value of the signal
+ * @info: struct containing more information on the signal
+ * @ucontext: struct containing signal context information
  */
 void sigquit_handler(int sig, siginfo_t *info, void *ucontext)
 {
