@@ -5,6 +5,7 @@
  *
  * @argc: argument count
  * @argv: argument vector
+ * Return: 0 on success, or EXIT_FAILURE otherwise.
  */
 int main(int argc, char **argv)
 {
