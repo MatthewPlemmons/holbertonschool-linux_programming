@@ -34,9 +34,10 @@ int sort_items(const char **dir_items)
 		{
 			if (a_sort(dir_items[i], dir_items[j]) > 0)
 			{
-				strcpy(temp, (char *) dir_items[i]);
-				strcpy((char *) dir_items[i], dir_items[j]);
-				strcpy((char *) dir_items[j], temp);
+				_strcpy(temp, (char *) dir_items[i]);
+				_strcpy((char *) dir_items[i],
+					(char *) dir_items[j]);
+				_strcpy((char *) dir_items[j], temp);
 			}
 		}
 	}

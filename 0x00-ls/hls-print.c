@@ -80,10 +80,10 @@ void print_long_format(const char *file, char *path)
 	char *fullpath, *time;
 	int pathlen;
 
+	pathlen = 0;
 	pathlen = _strlen((char *) file) + _strlen(path) + 1;
-	fullpath = malloc(sizeof(char) * pathlen);
+	fullpath = _calloc(pathlen, sizeof(char));
 	_strcpy(fullpath, path);
-	_strcat(fullpath, "/");
 	_strcat(fullpath, (char *) file);
 
 	lstat(fullpath, &buf);
@@ -99,7 +99,10 @@ void print_long_format(const char *file, char *path)
 
 	/* print time */
 	time = ctime(&(buf.st_mtime));
+	time = date_format(time);
 	printf("%s ", time);
+	free(time);
+
 	printf("%s", file);
 }
 
@@ -108,6 +111,7 @@ void print_long_format(const char *file, char *path)
  *
  * @dir_items: list of files names in the directory
  * @dir_path: directory path
+ * @format: enum for formatting flags
  */
 void print_files(const char **dir_items, char *dir_path, enum format format)
 {
@@ -123,7 +127,7 @@ void print_files(const char **dir_items, char *dir_path, enum format format)
 		for (i = 0; dir_items[i]; ++i)
 		{
 			print_long_format(dir_items[i], dir_path);
-			putchar('\n');
+			printf("\n");
 		}
 		break;
 	default:
