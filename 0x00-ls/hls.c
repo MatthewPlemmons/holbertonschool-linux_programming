@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 		dir_items = collect_names(dir_paths[i],
 					  file_count,
 					  *print_mode);
-		sort_items(dir_items);
+		/*sort_items(dir_items);*/
 
 		if (n_dir_args > 1)
 			print_path_name(dir_paths[i]);
