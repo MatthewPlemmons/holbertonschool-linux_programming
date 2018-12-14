@@ -80,4 +80,6 @@ int _strcmp(char *s1, char *s2);
 /* hls-calloc.c */
 void *_calloc(size_t nmemb, size_t size);
 
+char *build_error_string(char *error, char *path);
+
 #endif

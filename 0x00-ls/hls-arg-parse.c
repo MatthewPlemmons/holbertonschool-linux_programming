@@ -99,6 +99,9 @@ size_t check_flags(char *flags,
 			++count;
 			continue;
 		}
+		/* if flag not found, print an error message */
+		/* free `format` and `print_mode` and exit */
+		/*flags[i]*/
 	}
 
 	return (count);
@@ -114,16 +117,19 @@ size_t check_flags(char *flags,
 size_t check_valid_directory(char *path)
 {
 	DIR *dir;
+	char *errstr;
 
 	dir = opendir((const char *) path);
 	if (!dir)
 	{
-		perror("ls");
+		errstr = build_error_string("hls: unable to access ", path);
+		print_error(errstr);
+		free(errstr);
 		return (1);
 	}
 	if (closedir(dir) == -1)
 	{
-		perror("ls");
+		perror("hls");
 		return (1);
 	}
 	return (0);
