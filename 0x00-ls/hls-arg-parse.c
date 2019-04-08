@@ -117,14 +117,14 @@ size_t check_flags(char *flags,
 size_t check_valid_directory(char *path)
 {
 	DIR *dir;
-	char *errstr;
+	/*char *errstr;*/
+	int err;
 
 	dir = opendir((const char *) path);
 	if (!dir)
 	{
-		errstr = build_error_string("hls: cannot access ", path);
-		print_error(errstr);
-		free(errstr);
+		err = errno;
+		error_handler(err, path);
 		return (1);
 	}
 	if (closedir(dir) == -1)

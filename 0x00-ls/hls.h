@@ -42,7 +42,6 @@ enum format
 };
 
 /* hls.c */
-void print_error(const char *s);
 size_t count_files(char *path, enum print_mode print_mode);
 const char **collect_names(char *items,
 			   size_t file_count,
@@ -80,6 +79,8 @@ int _strcmp(char *s1, char *s2);
 /* hls-calloc.c */
 void *_calloc(size_t nmemb, size_t size);
 
-char *build_error_string(char *error, char *path);
+/* hls-error.c */
+void print_error(char *error, char *path);
+void error_handler(int err, char *path);
 
 #endif

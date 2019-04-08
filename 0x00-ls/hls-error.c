@@ -1,13 +1,12 @@
 #include "hls.h"
 
 /**
- * build_error_string - build an error message for `perror()`
+ * print_error - build an error message and call `perror()`
  *
  * @error: error message
  * @path: path string
- * Return: pointer to new error string
  */
-char *build_error_string(char *error, char *path)
+void print_error(char *error, char *path)
 {
 	char *errstr, *errmsg;
 	int len;
@@ -22,5 +21,20 @@ char *build_error_string(char *error, char *path)
 
 	_strcat(errstr, path);
 
-	return (errstr);
+	perror(errstr);
+	free(errstr);
+}
+
+/**
+ * error_handler - detect which error occured and print its error message
+ *
+ * @err: errno value
+ * @path: directory path
+ */
+void error_handler(int err, char *path)
+{
+	if (err == EACCES)
+		print_error("hls: cannot open directory ", path);
+	if (err == ENOENT)
+		print_error("hls: cannot access ", path);
 }

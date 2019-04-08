@@ -1,17 +1,5 @@
 #include "hls.h"
 
-/**
- * print_error - print error messages.
- *
- * @s: string that initiated error
- */
-void print_error(const char *s)
-{
-	if (errno == ENOENT)
-		perror(s);
-	if (errno == EACCES)
-		perror(s);
-}
 
 /**
  * count_files - count the number of files in a directory.
@@ -29,7 +17,7 @@ size_t count_files(char *path, enum print_mode print_mode)
 	dir = opendir(path);
 	if (!dir)
 	{
-		print_error((const char *) path);
+		/*print_error((const char *) path);*/
 	}
 
 	while ((read = readdir(dir)) != NULL)
@@ -72,6 +60,7 @@ const char **collect_names(char *path,
 	const char **dir_items;
 	size_t i;
 
+	/* add error checking for this malloc call */
 	dir_items = _calloc(file_count + 1, sizeof(char *));
 	for (i = 0; i < file_count; ++i)
 	{
@@ -159,7 +148,13 @@ int main(int argc, char *argv[])
 	(void) argc;
 
 	format = _calloc(2, sizeof(enum format));
+	if (!format)
+		exit(EXIT_FAILURE);
+
 	print_mode = _calloc(2, sizeof(enum print_mode));
+	if (!print_mode)
+		exit(EXIT_FAILURE);
+
 	n_dir_args = 0;
 
 	/* `parse_args()` sets the `format` and `print_mode` */
