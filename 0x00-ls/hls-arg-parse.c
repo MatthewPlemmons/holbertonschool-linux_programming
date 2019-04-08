@@ -122,7 +122,7 @@ size_t check_valid_directory(char *path)
 	dir = opendir((const char *) path);
 	if (!dir)
 	{
-		errstr = build_error_string("hls: unable to access ", path);
+		errstr = build_error_string("hls: cannot access ", path);
 		print_error(errstr);
 		free(errstr);
 		return (1);
