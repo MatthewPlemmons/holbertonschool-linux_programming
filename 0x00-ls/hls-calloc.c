@@ -30,3 +30,20 @@ void *_calloc(size_t nmemb, size_t size)
 
 	return (ptr);
 }
+
+/**
+ * free_ptr_array - free space allocated for filenames.
+ *
+ * @arr: list of filenames
+ * @file_count: number of files in directory
+ * Return: 0 if successful.
+ */
+int free_ptr_array(const char **arr, size_t file_count)
+{
+	size_t i;
+
+	for (i = 0; i < file_count; ++i)
+		free((void *) arr[i]);
+	free((void *) arr);
+	return (0);
+}

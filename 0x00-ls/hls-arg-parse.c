@@ -3,26 +3,13 @@
 /**
  * extract_directory_paths - copy directory paths passed via command line.
  *
- * @n_dir_args: number of directory arguments
- * @argv: list of arguments/directory paths
+ * @dir_paths: list of directory paths
+ * @argv: list of arguments entered from command line
  * Return: sorted list of directory paths.
  */
-char **extract_directory_paths(size_t n_dir_args, char *argv[])
+void extract_directory_paths(char **dir_paths, char *argv[])
 {
 	int i, n, index;
-	char **dir_paths;
-
-	/* need error checking on these mem allocation functions */
-	if (n_dir_args == 0)
-	{
-		dir_paths = _calloc(sizeof(char *), 2);
-		dir_paths[0] = _calloc(sizeof(char), MAX_PATH_SIZE);
-		_strcpy(dir_paths[0], "./");
-		dir_paths[1] = NULL;
-		return (dir_paths);
-	}
-
-	dir_paths = _calloc(n_dir_args + 1, sizeof(char *));
 
 	index = 0;
 	for (i = 1; argv[i]; ++i)
@@ -30,22 +17,20 @@ char **extract_directory_paths(size_t n_dir_args, char *argv[])
 		if (argv[i][0] == '-')
 			continue;
 
-		if (check_valid_directory(argv[i]) == 0)
+		if (is_valid_directory(argv[i]) == 0)
 		{
-			/* Check if path string ends with a '/'. */
+			/* Check if path string ends with a '/' */
 			n = _strlen(argv[i]);
 			if (n < MAX_PATH_SIZE - 1)
 			{
 				if (argv[i][n - 1] != '/')
 					++n;
-
 				dir_paths[index] = _calloc(sizeof(char),
 							  MAX_PATH_SIZE);
 				_strcpy(dir_paths[index], argv[i]);
 
 				if (dir_paths[index][n - 1] != '/')
 					_strcat(dir_paths[index], "/");
-
 				++index;
 			}
 			else
@@ -53,9 +38,7 @@ char **extract_directory_paths(size_t n_dir_args, char *argv[])
 		}
 	}
 	dir_paths[index] = NULL;
-
-	/*sort_items((const char **) dir_paths);*/
-	return (dir_paths);
+	/*return (dir_paths);*/
 }
 
 /**
@@ -114,10 +97,9 @@ size_t check_flags(char *flags,
  * @path: directory path to check
  * Return: 0 if `path` is a directory, else 1.
  */
-size_t check_valid_directory(char *path)
+size_t is_valid_directory(char *path)
 {
 	DIR *dir;
-	/*char *errstr;*/
 	int err;
 
 	dir = opendir((const char *) path);

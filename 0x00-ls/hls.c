@@ -5,6 +5,7 @@
  * count_files - count the number of files in a directory.
  *
  * @path: directory path
+ * @print_mode: print mode
  * Return: number of files in directory.
  */
 size_t count_files(char *path, enum print_mode print_mode)
@@ -113,21 +114,60 @@ const char **collect_names(char *path,
 }
 
 /**
- * free_ptr_array - free space allocated for filenames.
+ * init_dir_paths - allocate memory for storing directory path strings.
  *
- * @arr: list of filenames
- * @file_count: number of files in directory
- * Return: 0 if successful.
+ * @n_dirs: number of directories
+ * Return: pointer to array for storing directory path strings
  */
-int free_ptr_array(const char **arr, size_t file_count)
+char **init_dir_paths(size_t n_dirs)
 {
-	size_t i;
+	char **dir_paths;
 
-	for (i = 0; i < file_count; ++i)
-		free((void *) arr[i]);
-	free((void *) arr);
-	return (0);
+	if (n_dirs == 0)
+	{
+		/* if no directories given, use `./` to search current dir */
+		dir_paths = _calloc(2, sizeof(char *));
+		dir_paths[0] = _calloc(MAX_PATH_SIZE, sizeof(char));
+		_strcpy(dir_paths[0], "./");
+		dir_paths[1] = NULL;
+		return (dir_paths);
+	}
+	dir_paths = _calloc(n_dirs + 1, sizeof(char *));
+	return (dir_paths);
 }
+
+/**
+ * print_dirs - print contents of directories.
+ *
+ * @dir_paths: array of directory path strings
+ * @n_dirs: number of directories
+ * @format: print format
+ * @print_mode: print mode
+ */
+void print_dirs(char **dir_paths,
+		size_t n_dirs,
+		enum format *format,
+		enum print_mode *print_mode)
+{
+	const char **dir_items;
+	size_t i, n_files;
+
+	for (i = 0; dir_paths[i]; ++i)
+	{
+		n_files = count_files(dir_paths[i], *print_mode);
+		dir_items = collect_names(dir_paths[i],
+					  n_files,
+					  *print_mode);
+		/*sort_items(dir_items);*/
+		if (n_dirs > 1)
+			print_path_name(dir_paths[i]);
+		print_files(dir_items, dir_paths[i], *format);
+		if (dir_paths[i + 1])
+			printf("\n");
+		free_ptr_array(dir_items, n_files);
+	}
+}
+
 
 /**
  * main - custom implementation of the `ls` command.
@@ -138,14 +178,14 @@ int free_ptr_array(const char **arr, size_t file_count)
  */
 int main(int argc, char *argv[])
 {
-	const char **dir_items;
 	char **dir_paths;
-	/*char *dir_path;*/
-	size_t i, n_dir_args, file_count;
+	size_t i, n_dirs;
 	enum format *format;
 	enum print_mode *print_mode;
+	int exit_status;
 
 	(void) argc;
+	exit_status = 0;
 
 	format = _calloc(2, sizeof(enum format));
 	if (!format)
@@ -155,36 +195,25 @@ int main(int argc, char *argv[])
 	if (!print_mode)
 		exit(EXIT_FAILURE);
 
-	n_dir_args = 0;
+	n_dirs = 0;
 
 	/* `parse_args()` sets the `format` and `print_mode` */
-	n_dir_args = parse_args(argv, format, print_mode);
-	dir_paths = extract_directory_paths(n_dir_args, argv);
-	if (n_dir_args == 0)
-		n_dir_args = 1;
+	n_dirs = parse_args(argv, format, print_mode);
+	dir_paths = init_dir_paths(n_dirs);
 
-	for (i = 0; dir_paths[i]; ++i)
-	{
-		file_count = count_files(dir_paths[i], *print_mode);
-		dir_items = collect_names(dir_paths[i],
-					  file_count,
-					  *print_mode);
-		/*sort_items(dir_items);*/
+	if (n_dirs > 0)
+		extract_directory_paths(dir_paths, argv);
+	else
+		n_dirs = 1;
 
-		if (n_dir_args > 1)
-			print_path_name(dir_paths[i]);
-		print_files(dir_items, dir_paths[i], *format);
+	exit_status = errno;
+	print_dirs(dir_paths, n_dirs, format, print_mode);
 
-		if (dir_paths[i + 1])
-			printf("\n");
-		free_ptr_array(dir_items, file_count);
-	}
-
-	for (i = 0; i < n_dir_args; ++i)
+	for (i = 0; i < n_dirs; ++i)
 		free(dir_paths[i]);
 
 	free(dir_paths);
 	free(format);
 	free(print_mode);
-	return (0);
+	return (exit_status);
 }

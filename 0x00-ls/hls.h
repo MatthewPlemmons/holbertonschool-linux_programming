@@ -16,6 +16,7 @@
 #define MAX_FILENAME_SIZE 256
 #define MAX_PATH_SIZE 4096
 
+
 /**
  * enum print_mode - keeps track of option flags for printing directory
  * contents.
@@ -46,7 +47,10 @@ size_t count_files(char *path, enum print_mode print_mode);
 const char **collect_names(char *items,
 			   size_t file_count,
 			   enum print_mode print_mode);
-int free_ptr_array(const char **arr, size_t file_count);
+void print_dirs(char **dir_paths,
+		size_t n_dirs,
+		enum format *format,
+		enum print_mode *print_mode);
 
 /* hls-print.c */
 void print_type(struct stat buf);
@@ -60,10 +64,10 @@ int sort_items(const char **items);
 int a_sort(const char *a, const char *b);
 
 /* hls-arg-parse.c */
-char **extract_directory_paths(size_t argc, char **argv);
+void extract_directory_paths(char **dir_paths, char *argv[]);
 size_t check_flags(char *flags, enum format *format,
 		   enum print_mode *print_mode);
-size_t check_valid_directory(char *path);
+size_t is_valid_directory(char *path);
 size_t parse_args(char **argv, enum format *format,
 		  enum print_mode *print_mode);
 
@@ -78,6 +82,7 @@ int _strcmp(char *s1, char *s2);
 
 /* hls-calloc.c */
 void *_calloc(size_t nmemb, size_t size);
+int free_ptr_array(const char **arr, size_t file_count);
 
 /* hls-error.c */
 void print_error(char *error, char *path);
