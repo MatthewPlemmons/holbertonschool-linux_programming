@@ -182,10 +182,8 @@ int main(int argc, char *argv[])
 	size_t i, n_dirs;
 	enum format *format;
 	enum print_mode *print_mode;
-	int exit_status;
 
 	(void) argc;
-	exit_status = 0;
 
 	format = _calloc(2, sizeof(enum format));
 	if (!format)
@@ -206,7 +204,7 @@ int main(int argc, char *argv[])
 	else
 		n_dirs = 1;
 
-	exit_status = errno;
+	/*exit_status = errno;*/
 	print_dirs(dir_paths, n_dirs, format, print_mode);
 
 	for (i = 0; i < n_dirs; ++i)
@@ -215,5 +213,5 @@ int main(int argc, char *argv[])
 	free(dir_paths);
 	free(format);
 	free(print_mode);
-	return (exit_status);
+	return (0);
 }
