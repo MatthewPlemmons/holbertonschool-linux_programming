@@ -47,6 +47,7 @@ size_t count_files(char *path, enum print_mode print_mode);
 const char **collect_names(char *items,
 			   size_t file_count,
 			   enum print_mode print_mode);
+char **init_dir_paths(size_t n_dirs);
 void print_dirs(char **dir_paths,
 		size_t n_dirs,
 		enum format *format,
@@ -64,10 +65,10 @@ int sort_items(const char **items);
 int a_sort(const char *a, const char *b);
 
 /* hls-arg-parse.c */
-void extract_directory_paths(char **dir_paths, char *argv[]);
+int extract_directory_paths(char **dir_paths, char *argv[]);
 size_t check_flags(char *flags, enum format *format,
 		   enum print_mode *print_mode);
-size_t is_valid_directory(char *path);
+int is_valid_directory(char *path);
 size_t parse_args(char **argv, enum format *format,
 		  enum print_mode *print_mode);
 

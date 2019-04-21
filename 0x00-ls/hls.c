@@ -182,6 +182,7 @@ int main(int argc, char *argv[])
 	size_t i, n_dirs;
 	enum format *format;
 	enum print_mode *print_mode;
+	int exit_status;
 
 	(void) argc;
 
@@ -193,6 +194,7 @@ int main(int argc, char *argv[])
 	if (!print_mode)
 		exit(EXIT_FAILURE);
 
+	exit_status = 0;
 	n_dirs = 0;
 
 	/* `parse_args()` sets the `format` and `print_mode` */
@@ -200,7 +202,7 @@ int main(int argc, char *argv[])
 	dir_paths = init_dir_paths(n_dirs);
 
 	if (n_dirs > 0)
-		extract_directory_paths(dir_paths, argv);
+		exit_status = extract_directory_paths(dir_paths, argv);
 	else
 		n_dirs = 1;
 
@@ -213,5 +215,5 @@ int main(int argc, char *argv[])
 	free(dir_paths);
 	free(format);
 	free(print_mode);
-	return (0);
+	return (exit_status);
 }

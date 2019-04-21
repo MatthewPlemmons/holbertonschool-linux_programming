@@ -5,19 +5,21 @@
  *
  * @dir_paths: list of directory paths
  * @argv: list of arguments entered from command line
- * Return: sorted list of directory paths.
+ * Return: 1 or 2 on error, 0 otherwise.
  */
-void extract_directory_paths(char **dir_paths, char *argv[])
+int extract_directory_paths(char **dir_paths, char *argv[])
 {
-	int i, n, index;
+	int i, n, index, err, exit_status;
 
+	exit_status = 0;
 	index = 0;
 	for (i = 1; argv[i]; ++i)
 	{
 		if (argv[i][0] == '-')
 			continue;
 
-		if (is_valid_directory(argv[i]) == 0)
+		err = is_valid_directory(argv[i]);
+		if (err == 0)
 		{
 			/* Check if path string ends with a '/' */
 			n = _strlen(argv[i]);
@@ -36,9 +38,11 @@ void extract_directory_paths(char **dir_paths, char *argv[])
 			else
 				printf("directory path too long.\n");
 		}
+		else
+			exit_status = err;
 	}
 	dir_paths[index] = NULL;
-	/*return (dir_paths);*/
+	return (exit_status);
 }
 
 /**
@@ -95,9 +99,9 @@ size_t check_flags(char *flags,
  * check_valid_directory - check if the path string is a directory.
  *
  * @path: directory path to check
- * Return: 0 if `path` is a directory, else 1.
+ * Return: 0 if `path` is a directory, else 2.
  */
-size_t is_valid_directory(char *path)
+int is_valid_directory(char *path)
 {
 	DIR *dir;
 	int err;
@@ -107,12 +111,12 @@ size_t is_valid_directory(char *path)
 	{
 		err = errno;
 		error_handler(err, path);
-		return (1);
+		return (2);
 	}
 	if (closedir(dir) == -1)
 	{
 		perror("hls");
-		return (1);
+		return (2);
 	}
 	return (0);
 
