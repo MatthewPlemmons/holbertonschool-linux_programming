@@ -96,7 +96,7 @@ size_t check_flags(char *flags,
 
 
 /**
- * check_valid_directory - check if the path string is a directory.
+ * is_valid_directory - check if the path string is a directory.
  *
  * @path: directory path to check
  * Return: 0 if `path` is a directory, else 2.
