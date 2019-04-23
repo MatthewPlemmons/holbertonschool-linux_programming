@@ -92,8 +92,13 @@ void print_long_format(const char *file, char *path)
 	print_type(buf);
 	print_permissions(buf);
 
+	/* print number of links */
+	printf(" %lu", buf.st_nlink);
+
+	/* add error checking on `pwd` and `grp` */
 	pwd = getpwuid(buf.st_uid);
 	grp = getgrgid(buf.st_gid);
+
 	printf(" %s %s ", pwd->pw_name, grp->gr_name);
 	printf("%d ", (int) buf.st_size);
 
