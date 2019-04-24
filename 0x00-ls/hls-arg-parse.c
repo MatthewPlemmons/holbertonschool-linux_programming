@@ -60,7 +60,7 @@ size_t check_flags(char *flags,
 	size_t i, count;
 
 	count = 0;
-	for (i = 0; flags[i]; ++i)
+	for (i = 1; flags[i]; ++i)
 	{
 		if (flags[i] == '1')
 		{
@@ -87,8 +87,10 @@ size_t check_flags(char *flags,
 			continue;
 		}
 		/* if flag not found, print an error message */
-		/* free `format` and `print_mode` and exit */
-		/*flags[i]*/
+		printf("hls: invalid option -- '%c'\n", flags[i]);
+		free(format);
+		free(print_mode);
+		exit(2);
 	}
 
 	return (count);
