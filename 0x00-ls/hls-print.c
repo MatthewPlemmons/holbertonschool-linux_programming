@@ -95,11 +95,16 @@ void print_long_format(const char *file, char *path)
 	/* print number of links */
 	printf(" %lu", buf.st_nlink);
 
-	/* add error checking on `pwd` and `grp` */
 	pwd = getpwuid(buf.st_uid);
 	grp = getgrgid(buf.st_gid);
-
-	printf(" %s %s ", pwd->pw_name, grp->gr_name);
+	if (pwd != NULL)
+		printf(" %s ", pwd->pw_name);
+	else
+		printf(" %-8d", buf.st_uid);
+	if (grp != NULL)
+		printf(" %s ", grp->gr_name);
+	else
+		printf(" %-8d ", buf.st_gid);
 	printf("%d ", (int) buf.st_size);
 
 	/* print time */
@@ -107,7 +112,6 @@ void print_long_format(const char *file, char *path)
 	time = date_format(time);
 	printf("%s ", time);
 	free(time);
-
 	printf("%s", file);
 }
 
