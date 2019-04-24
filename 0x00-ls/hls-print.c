@@ -100,7 +100,7 @@ void print_long_format(const char *file, char *path)
 	if (pwd != NULL)
 		printf(" %s ", pwd->pw_name);
 	else
-		printf(" %-8d", buf.st_uid);
+		printf(" %-8d ", buf.st_uid);
 	if (grp != NULL)
 		printf(" %s ", grp->gr_name);
 	else
